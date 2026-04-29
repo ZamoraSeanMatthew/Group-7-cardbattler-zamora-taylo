@@ -36,18 +36,25 @@ To run the game locally:
 
 ## List of Controls
 *Enter Arena*: Click the main button on the landing page to start.
+
 *Player Setup*: Input your nickname to personalize the HUD.
+
 *Card Selection*: Choose 1 of 4 mystery cards to set your starting value.
+
 *Higher (↑) / Lower (↓)*: Click these buttons to predict the next card's value.
+
 *Peek Board*: Temporarily hides the overlay for 5 seconds to let you analyze previous draws.
+
 *Score History*: Check the "Score History" button on the home screen to see the last 10 battle results.
 
 ## Game Mechanics & Scoring
 Value Logic: The game treats cards 1-52 as four sets of 1-13.
+
 CPU Opponent: A randomized AI (Viper, Glitch, etc.) makes its own predictions simultaneously.
 
 ## Scoring:
 Correct Prediction: +100 Points
+
 Wrong Prediction: -50 Points
 
 Expansion: After the first round, the UI sidebars fade away, and the card grid expands for a more immersive view.
