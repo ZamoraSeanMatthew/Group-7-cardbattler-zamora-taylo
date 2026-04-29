@@ -82,61 +82,62 @@
 <body>
 
     <div id="hud" style="display: none;" class="hud">
-        <div class="score-box player-score">
-            <div id="pNameDisp">Player</div>
-            <div id="pScoreDisp" style="font-size: 24px; font-weight: bold;">0</div>
+        <div class="score-box" style="border-color: var(--player-glow)">
+            <div id="pNameDisp" style="font-family: 'Orbitron'; font-size: 14px; color: #94a3b8;">Player</div>
+            <div id="pScoreDisp" style="font-size: 28px; font-weight: bold;">0</div>
         </div>
-        <div class="score-box cpu-score">
-            <div id="cNameDisp">CPU</div>
-            <div id="cScoreDisp" style="font-size: 24px; font-weight: bold;">0</div>
+        <div class="score-box" style="border-color: var(--cpu-glow); text-align: right;">
+            <div id="cNameDisp" style="font-family: 'Orbitron'; font-size: 14px; color: #94a3b8;">CPU</div>
+            <div id="cScoreDisp" style="font-size: 28px; font-weight: bold;">0</div>
         </div>
     </div>
 
     <section id="landing" class="screen active">
-        <h1>Card Battler</h1>
-        <button class="btn-main" onclick="goToSetup()">START GAME</button>
+        <h1>CARD BATTLER</h1>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-main" onclick="showScreen('setup')">ENTER ARENA</button>
+            <button class="btn-main btn-secondary" onclick="showHistory()">SCORE HISTORY</button>
+        </div>
     </section>
 
     <section id="setup" class="screen">
-        <div class="setup-box">
-            <h2 style="font-family: 'Orbitron'">WHO ARE YOU?</h2>
-            <input type="text" id="playerName" placeholder="Enter Nickname..." maxlength="12">
-            <button class="btn-main" onclick="startGame()">BATTLE</button>
+        <div style="background: rgba(255,255,255,0.05); padding: 50px; border-radius: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
+            <h2 style="font-family: 'Orbitron'; margin-bottom:30px;">IDENTIFY YOURSELF</h2>
+            <input type="text" id="playerName" placeholder="Input Name..." style="width: 100%; padding: 15px; margin-bottom: 30px; border-radius: 10px; border: none; background: #0f172a; color: white; font-size: 1.1rem; border-bottom: 2px solid var(--accent);">
+            <button class="btn-main" onclick="startGame()">START BATTLE</button>
         </div>
     </section>
 
     <section id="selection" class="screen">
-        <h2 style="font-family: 'Orbitron'; color: var(--accent)">PICK YOUR DESTINY</h2>
-        <p>Choose one card to start your journey</p>
+        <h2 style="font-family: 'Orbitron'; color: var(--accent); margin-bottom: 40px;">SELECT YOUR PRIMORDIAL CARD</h2>
         <div class="card-container" id="firstCardPool"></div>
-        <div id="selectionAnnounce" style="margin-top: 30px; font-size: 1.2rem; min-height: 30px;"></div>
     </section>
 
     <section id="mainBoard" class="screen">
-        <div class="board-layout" id="fullLayout">
-            <div class="side-area">
-                <div class="card" id="pBigCard"></div>
-                <p id="pLabel"></p>
+        <div class="board-layout" id="boardLayout">
+            <div id="pSide" style="text-align: center;">
+                <div class="card" id="pBigCard" style="width: 180px; height: 285px; margin-bottom: 15px; box-shadow: 0 0 30px var(--player-glow);"></div>
+                <div id="pLabel" style="font-family: 'Orbitron'; color: var(--player-glow);"></div>
             </div>
-            
-            <div class="history-grid" id="historyGrid">
-                </div>
-
-            <div class="side-area">
-                <div class="card" id="cBigCard"></div>
-                <p id="cLabel"></p>
+            <div class="history-grid" id="historyGrid"></div>
+            <div id="cSide" style="text-align: center;">
+                <div class="card" id="cBigCard" style="width: 180px; height: 285px; margin-bottom: 15px; box-shadow: 0 0 30px var(--cpu-glow);"></div>
+                <div id="cLabel" style="font-family: 'Orbitron'; color: var(--cpu-glow);"></div>
             </div>
         </div>
     </section>
 
     <div id="choiceOverlay" class="choice-overlay">
-        <h2 id="questionText">WHAT IS THE NEXT CARD?</h2>
-        <div class="choice-btns" id="choiceBtns">
+        <h2 id="qTitle" style="font-family: 'Orbitron'; margin-bottom: 30px;">WHAT IS THE NEXT CARD?</h2>
+        <div id="choiceActions">
             <button class="btn-choice up" onclick="makeChoice('up')">HIGHER ↑</button>
             <button class="btn-choice down" onclick="makeChoice('down')">LOWER ↓</button>
+            <br>
+            <button class="btn-peek" onclick="peekBoard()">PEEK BOARD (5s)</button>
         </div>
-        <div id="cpuLoading" style="display: none;">
-            <div class="loader-text">CPU IS THINKING...</div>
+        <div id="loadingBox" style="display: none; text-align: center;">
+            <p id="resultMsg" class="result-text"></p>
+            <div style="font-family: 'Orbitron'; color: var(--accent); letter-spacing: 5px;">ANALYZING CPU...</div>
         </div>
     </div>
 
