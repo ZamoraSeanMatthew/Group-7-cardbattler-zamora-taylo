@@ -144,9 +144,7 @@
 <script>
     // --- State Management ---
     let deck = [], pName = "", cName = "", pScore = 0, cScore = 0;
-    let pCardVal = 0, cCardVal = 0, currentVal = 0;
-    let round = 1;
-    const cpuNames = ["Xenon", "Cipher", "Aegis", "Vortex", "Neon"];
+    let currentFileNum = 0, round = 1;
 
     function getCardValue(fileNum) { return ((fileNum - 1) % 13) + 1; }
 
@@ -164,18 +162,28 @@
         }
     }
 
-    // --- Page Transitions ---
-    function goToSetup() { showScreen('setup'); }
-
     function startGame() {
-        pName = document.getElementById('playerName').value || "Player 1";
-        cName = cpuNames[Math.floor(Math.random()*cpuNames.length)];
-        
+        pName = document.getElementById('playerName').value || "PLAYER";
+        cName = ["Viper", "Glitch", "Shadow", "Neon"][Math.floor(Math.random()*4)];
         document.getElementById('pNameDisp').innerText = pName;
         document.getElementById('cNameDisp').innerText = cName;
         document.getElementById('hud').style.display = 'flex';
-        
-        initSelection();
+        buildDeck();
+        const pool = document.getElementById('firstCardPool');
+        pool.innerHTML = '';
+        const poolCards = [deck.shift(), deck.shift(), deck.shift(), deck.shift()];
+        poolCards.forEach(num => {
+            const c = document.createElement('div');
+            c.className = 'card';
+            c.style.backgroundImage = `url('images/cards/back.jpg')`;
+            c.onclick = () => {
+                currentFileNum = num;
+                showScreen('mainBoard');
+                initBoard(num, poolCards.find(n => n !== num));
+                setTimeout(startRound, 1500);
+            };
+            pool.appendChild(c);
+        });
         showScreen('selection');
     }
 
