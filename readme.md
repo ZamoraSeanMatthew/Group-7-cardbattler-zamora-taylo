@@ -3,9 +3,13 @@
 ## Team Information
 
 **Name:** TAYLO, CLARK KENNETH
+
           ZAMORA, SEAN MATTHEW
+
 **Section:** 9339-AY225
+
 **Course:** BSCSIT 1203 Programming 2
+
 **School:** University of Perpetual Help System DALTA – Molino Campus
 
 ---
