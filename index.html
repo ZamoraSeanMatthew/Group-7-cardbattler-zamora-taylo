@@ -137,7 +137,7 @@
         </div>
         <div id="loadingBox" style="display: none; text-align: center;">
             <p id="resultMsg" class="result-text"></p>
-            <div id="cpuThinking" style="font-family: 'Orbitron'; color: var(--accent); letter-spacing: 5px;">ANALYZING CPU...
+            <div id="cpuThinking" style="font-family: 'Orbitron'; color: var(--accent); letter-spacing: 5px;">ANALYZING CPU...</div>
         </div>
     </div>
 
@@ -224,43 +224,43 @@
         document.getElementById('choiceActions').style.display = 'none';
         document.getElementById('loadingBox').style.display = 'block';
 
+        const cpuText = document.getElementById('cpuThinking');
+        const resEl = document.getElementById('resultMsg');
+        
+        cpuText.innerHTML = "ANALYZING CPU...";
+        resEl.innerHTML = "";
+
         const nextFileNum = deck.shift();
         const currentVal = getCardValue(currentFileNum);
         const nextVal = getCardValue(nextFileNum);
-        
         const isUp = nextVal > currentVal;
-        // Random CPU Choice
-        const cChoice = Math.random() > 0.5 ? 'up' : 'down';
         
+        const cChoice = Math.random() > 0.5 ? 'up' : 'down';
         const pCorrect = (pChoice === 'up' && isUp) || (pChoice === 'down' && !isUp);
         const cCorrect = (cChoice === 'up' && isUp) || (cChoice === 'down' && !isUp);
 
-        // Update the "Analyzing" box to show CPU details
-        const cpuText = document.getElementById('cpuThinking');
-        const cpuChoiceLabel = cChoice === 'up' ? "HIGHER ↑" : "LOWER ↓";
-        cpuText.innerHTML = `
-            <span style="color:var(--cpu-glow)">${cName} (CPU Opponent)</span><br>
-            CHOSE: <span style="color:var(--accent)">${cpuChoiceLabel}</span>
-        `;
-
-        const resEl = document.getElementById('resultMsg');
-        
-        // Final Results Display
         setTimeout(() => {
-            let pRes = pCorrect ? "✓ YOU ARE CORRECT!" : "✗ YOU ARE WRONG!";
-            let cRes = cCorrect ? `✓ ${cName} IS CORRECT!` : `✗ ${cName} IS WRONG!`;
-            
-            resEl.innerHTML = `
-                <div class="${pCorrect ? 'correct' : 'wrong'}">${pRes}</div>
-                <div class="${cCorrect ? 'correct' : 'wrong'}" style="font-size: 1.2rem; margin-top:10px;">${cRes}</div>
+            const cpuChoiceLabel = cChoice === 'up' ? "HIGHER ↑" : "LOWER ↓";
+            cpuText.innerHTML = `
+                <span style="color:var(--cpu-glow)">${cName} (CPU Opponent)</span><br>
+                CHOSE: <span style="color:var(--accent)">${cpuChoiceLabel}</span>
             `;
-            
-            // Adjust Scores
-            if(pCorrect) pScore += 100; else pScore -= 50;
-            if(cCorrect) cScore += 100; else cScore -= 50;
-        }, 1500); // 1.5s delay bago lumabas ang final result text
 
-        // Transition to next round
+            setTimeout(() => {
+                let pRes = pCorrect ? "✓ YOU ARE CORRECT!" : "✗ YOU ARE WRONG!";
+                let cRes = cCorrect ? `✓ ${cName} IS CORRECT!` : `✗ ${cName} IS WRONG!`;
+                
+                resEl.innerHTML = `
+                    <div class="${pCorrect ? 'correct' : 'wrong'}" style="margin-bottom: 5px;">${pRes}</div>
+                    <div class="${cCorrect ? 'correct' : 'wrong'}" style="font-size: 1.2rem;">${cRes}</div>
+                `;
+                
+                if(pCorrect) pScore += 100; else pScore -= 50;
+                if(cCorrect) cScore += 100; else cScore -= 50;
+            }, 1500);
+
+        }, 1500); 
+
         setTimeout(() => {
             document.getElementById('choiceOverlay').style.display = 'none';
             document.getElementById(`slot-${round-1}`).style.backgroundImage = `url('images/cards/${nextFileNum}.jpg')`;
@@ -280,10 +280,8 @@
             currentFileNum = nextFileNum; 
             round++;
             
-            // Reset CPU text for next time
-            cpuText.innerText = "ANALYZING CPU...";
             setTimeout(startRound, 2000);
-        }, 4500); // Total wait time (reveal results -> move next)
+        }, 6000); 
     }
 
     function saveGameResult(winner, pFinal, cFinal) {
