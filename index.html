@@ -187,76 +187,39 @@
         showScreen('selection');
     }
 
-    // --- Phase: Selection ---
-    function initSelection() {
-        buildDeck();
-        const pool = document.getElementById('firstCardPool');
-        pool.innerHTML = '';
-        const cards = [deck.shift(), deck.shift(), deck.shift(), deck.shift()];
-        
-        cards.forEach(val => {
-            const c = document.createElement('div');
-            c.className = 'card';
-            c.style.backgroundImage = url('images/cards/back.jpg');
-            c.onclick = () => selectFirstCard(c, val, cards);
-            pool.appendChild(c);
-        });
-    }
-
-    function selectFirstCard(el, val, allCards) {
-        if(el.parentElement.classList.contains('locked')) return;
-        el.parentElement.classList.add('locked');
-        
-        // Player Choice
-        el.classList.add('revealed');
-        el.style.backgroundImage = url('images/cards/${val}.jpg');
-        pCardVal = val;
-        
-        // CPU Choice (Random from remaining)
-        const remaining = allCards.filter(v => v !== val);
-        const cpuVal = remaining[Math.floor(Math.random()*remaining.length)];
-        cCardVal = cpuVal;
-
-        document.getElementById('selectionAnnounce').innerText = First Card for ${pName} is Reveal!;
-
-        setTimeout(() => {
-            initMainBoard();
-            showScreen('mainBoard');
-            startRoundLoop();
-        }, 2000);
-    }
-
-    // --- Phase: Main Board ---
-    function initMainBoard() {
+    function initBoard(pNum, cNum) {
         const grid = document.getElementById('historyGrid');
-        grid.innerHTML = '';
+        grid.innerHTML = ''; grid.classList.remove('expanded');
         for(let i=0; i<10; i++) {
-            const slot = document.createElement('div');
-            slot.className = 'history-slot';
-            slot.id = slot-${i};
-            grid.appendChild(slot);
+            const s = document.createElement('div'); s.className = 'history-slot'; s.id = `slot-${i}`;
+            grid.appendChild(s);
         }
-        
-        document.getElementById('pBigCard').style.backgroundImage = url('images/cards/${pCardVal}.jpg');
-        document.getElementById('cBigCard').style.backgroundImage = url('images/cards/${cCardVal}.jpg');
+        document.getElementById('pBigCard').style.backgroundImage = `url('images/cards/${pNum}.jpg')`;
+        document.getElementById('cBigCard').style.backgroundImage = `url('images/cards/${cNum}.jpg')`;
         document.getElementById('pLabel').innerText = pName;
         document.getElementById('cLabel').innerText = cName;
-        
-        currentVal = pCardVal; // Game starts based on player's card
+        document.getElementById('pSide').style.display = 'block';
+        document.getElementById('pSide').style.opacity = '1';
+        document.getElementById('cSide').style.display = 'block';
+        document.getElementById('cSide').style.opacity = '1';
     }
 
-    async function startRoundLoop() {
+    function peekBoard() {
+        document.getElementById('choiceOverlay').style.opacity = "0";
+        document.getElementById('choiceOverlay').style.pointerEvents = "none";
+        setTimeout(() => {
+            document.getElementById('choiceOverlay').style.opacity = "1";
+            document.getElementById('choiceOverlay').style.pointerEvents = "auto";
+        }, 5000);
+    }
+
+    function startRound() {
         if(round > 10) return endGame();
-
-        await new Promise(r => setTimeout(r, 2000));
-        
-        // Show Overlay
         document.getElementById('choiceOverlay').style.display = 'flex';
-        document.getElementById('choiceBtns').style.display = 'flex';
-        document.getElementById('cpuLoading').style.display = 'none';
+        document.getElementById('choiceActions').style.display = 'block';
+        document.getElementById('loadingBox').style.display = 'none';
     }
-
-    let pChoice = "";
+    
     function makeChoice(dir) {
         pChoice = dir;
         document.getElementById('choiceBtns').style.display = 'none';
