@@ -15,7 +15,7 @@
 
 **Title: Card Battler**
 
-A high-stakes, strategic card game where you face off against a computer AI to predict the flow of the deck. Built for the Trio Bisaklat project.
+A high-stakes, strategic card game where you face off against a computer AI to predict the flow of the deck. Built for the BSCSIT 1203 Programming 2 project.
 
 ## Game Description
 *Card Battler* is a web-based "High or Low" competitive game. Unlike traditional card games, this features a dynamic Player vs. CPU environment. Players start with a "Primordial Card" and must predict if the next card drawn will be higher or lower in value. 
