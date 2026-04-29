@@ -14,6 +14,8 @@
             --player-glow: #3b82f6;
             --cpu-glow: #ef4444;
             --text: #f8fafc;
+            --card-w: 130px;
+            --card-h: 206px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -183,7 +185,7 @@
     const cpuNames = ["Xenon", "Cipher", "Aegis", "Vortex", "Neon"];
 
     function getCardValue(fileNum) { return ((fileNum - 1) % 13) + 1; }
-    
+
     // --- Core Functions ---
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
