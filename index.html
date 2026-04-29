@@ -219,50 +219,40 @@
         document.getElementById('choiceActions').style.display = 'block';
         document.getElementById('loadingBox').style.display = 'none';
     }
-    
-    function makeChoice(dir) {
-        pChoice = dir;
-        document.getElementById('choiceBtns').style.display = 'none';
-        document.getElementById('cpuLoading').style.display = 'block';
-        
-        setTimeout(() => {
-            revealNextCard();
-        }, 2000);
-    }
 
-    function revealNextCard() {
-        document.getElementById('choiceOverlay').style.display = 'none';
-        const nextVal = deck.shift();
-        const slot = document.getElementById(slot-${round-1});
-        slot.style.backgroundImage = url('images/cards/${nextVal}.jpg');
-        
-        // CPU logic: 50/50 chance
-        const cChoice = Math.random() > 0.5 ? 'up' : 'down';
-        
-        // Scoring
+    function makeChoice(pChoice) {
+        document.getElementById('choiceActions').style.display = 'none';
+        document.getElementById('loadingBox').style.display = 'block';
+        const nextFileNum = deck.shift();
+        const currentVal = getCardValue(currentFileNum);
+        const nextVal = getCardValue(nextFileNum);
         const isUp = nextVal > currentVal;
-        const pWin = (pChoice === 'up' && isUp) || (pChoice === 'down' && !isUp);
-        const cWin = (cChoice === 'up' && isUp) || (cChoice === 'down' && !isUp);
+        const cChoice = Math.random() > 0.5 ? 'up' : 'down';
+        const pCorrect = (pChoice === 'up' && isUp) || (pChoice === 'down' && !isUp);
+        const cCorrect = (cChoice === 'up' && isUp) || (cChoice === 'down' && !isUp);
 
-        if(pWin) pScore += 100; else pScore -= 50;
-        if(cWin) cScore += 100; else cScore -= 50;
+        const resEl = document.getElementById('resultMsg');
+        if(pCorrect) { resEl.innerText = "CONGRATULATIONS, CORRECT!"; resEl.className = "result-text correct"; pScore += 100; }
+        else { resEl.innerText = "SORRY, WRONG!"; resEl.className = "result-text wrong"; pScore -= 50; }
+        if(cCorrect) cScore += 100; else cScore -= 50;
 
-        updateHUD();
-        
-        // Move focus to 10 slots only
-        if(round === 1) {
-            document.getElementById('pBigCard').parentElement.style.opacity = '0';
-            document.getElementById('cBigCard').parentElement.style.opacity = '0';
-        }
-
-        currentVal = nextVal;
-        round++;
-        startRoundLoop();
-    }
-
-    function updateHUD() {
-        document.getElementById('pScoreDisp').innerText = pScore;
-        document.getElementById('cScoreDisp').innerText = cScore;
+        setTimeout(() => {
+            document.getElementById('choiceOverlay').style.display = 'none';
+            document.getElementById(`slot-${round-1}`).style.backgroundImage = `url('images/cards/${nextFileNum}.jpg')`;
+            if(round === 1) {
+                document.getElementById('pSide').style.opacity = '0';
+                document.getElementById('cSide').style.opacity = '0';
+                setTimeout(() => { 
+                    document.getElementById('pSide').style.display = 'none'; 
+                    document.getElementById('cSide').style.display = 'none';
+                    document.getElementById('historyGrid').classList.add('expanded');
+                }, 500);
+            }
+            document.getElementById('pScoreDisp').innerText = pScore;
+            document.getElementById('cScoreDisp').innerText = cScore;
+            currentFileNum = nextFileNum; round++;
+            setTimeout(startRound, 2000);
+        }, 3000);
     }
 
     function endGame() {
