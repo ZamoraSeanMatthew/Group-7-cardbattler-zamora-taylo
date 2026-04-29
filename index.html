@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>CARD BATTLER — PvP Edition</title>
+    <title>CARD BATTLER</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
     <style>
@@ -15,7 +15,7 @@
             --cpu-glow: #ef4444;
             --text: #f8fafc;
             --card-w: 130px;
-            --card-h: 206px;
+            --card-h: 206px; 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,97 +23,60 @@
             font-family: 'Inter', sans-serif;
             background: radial-gradient(circle at center, #111827 0%, #050b18 100%);
             color: var(--text);
-            overflow-x: hidden;
-            min-height: 100vh;
+            overflow: hidden;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* --- UI Components --- */
         .screen {
             display: none;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             height: 100vh;
             padding: 20px;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            animation: fadeIn 0.8s ease forwards;
+            animation: fadeIn 0.5s ease forwards;
         }
         .active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- HUD --- */
+        .hud { width: 100%; display: flex; justify-content: space-between; position: absolute; top: 20px; padding: 0 40px; z-index: 10; }
+        .score-box { background: rgba(0,0,0,0.7); padding: 12px 25px; border-radius: 12px; border-bottom: 4px solid var(--accent); min-width: 180px; backdrop-filter: blur(10px); }
 
-        /* --- Landing Screen --- */
-        #landing h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 4rem;
-            text-transform: uppercase;
-            letter-spacing: 8px;
-            color: var(--accent);
-            text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
-            margin-bottom: 40px;
-        }
+        /* --- Landing/Setup --- */
+        #landing h1 { font-family: 'Orbitron', sans-serif; font-size: 5rem; color: var(--accent); text-shadow: 0 0 30px rgba(245, 158, 11, 0.6); margin-bottom: 20px; }
+        .btn-main { padding: 18px 50px; font-family: 'Orbitron', sans-serif; background: var(--accent); border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; color: #000; margin: 10px; }
+        .btn-main:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--accent); }
+        .btn-secondary { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
 
-        .btn-main {
-            padding: 15px 40px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
-            background: var(--accent);
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
-        }
-        .btn-main:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--accent); }
+        /* --- History Table --- */
+        .history-container { width: 100%; max-height: 300px; overflow-y: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; color: white; }
+        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left; }
+        th { font-family: 'Orbitron'; color: var(--accent); font-size: 0.8rem; }
 
-        /* --- Setup Screen --- */
-        .setup-box { background: rgba(255,255,255,0.05); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 400px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 20px 0; border-radius: 8px; border: none; background: #0f172a; color: white; border-bottom: 2px solid var(--accent); }
+        /* --- Cards & Grid --- */
+        .card { width: var(--card-w); height: var(--card-h); background: var(--card-blue); border-radius: 10px; background-size: cover; background-position: center; border: 2px solid rgba(255,255,255,0.1); transition: 0.3s; }
+        .card-container { display: flex; gap: 20px; margin-top: 20px; }
+        .board-layout { display: flex; width: 100%; align-items: center; justify-content: center; gap: 40px; }
+        .history-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; background: rgba(255,255,255,0.03); padding: 30px; border-radius: 20px; transition: 0.8s; }
+        .history-grid.expanded { transform: scale(1.2); }
+        .history-slot { width: 140px; height: 222px; border: 2px dashed rgba(255,255,255,0.1); border-radius: 8px; background-size: cover; background-position: center; }
 
-        /* --- Game HUD --- */
-        .hud { width: 100%; display: flex; justify-content: space-between; position: absolute; top: 20px; padding: 0 40px; }
-        .score-box { background: rgba(0,0,0,0.4); padding: 10px 20px; border-radius: 10px; border-left: 4px solid var(--accent); }
-        .player-score { border-left-color: var(--player-glow); }
-        .cpu-score { border-left-color: var(--cpu-glow); text-align: right;}
-
-        /* --- Card Styles --- */
-        .card-container { display: flex; gap: 20px; margin-top: 30px; }
-        .card {
-            width: 140px; height: 200px;
-            background: var(--card-blue);
-            border-radius: 12px;
-            cursor: pointer;
-            background-size: cover;
-            border: 2px solid rgba(255,255,255,0.1);
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform-style: preserve-3d;
-            position: relative;
-        }
-        .card.revealed { transform: rotateY(180deg); }
-        .card.selected { border-color: var(--accent); box-shadow: 0 0 20px var(--accent); }
-
-        /* --- Main Board --- */
-        .board-layout { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 20px; width: 100%; align-items: center; }
-        .side-area { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .history-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 15px; }
-        .history-slot { width: 80px; height: 110px; border: 1px dashed #334155; border-radius: 6px; background-size: cover; transition: all 0.5s; }
-
-        /* --- Overlay Choices --- */
-        .choice-overlay {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(5, 11, 24, 0.9);
-            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
-        }
-        .choice-btns { display: flex; gap: 30px; margin-top: 20px; }
-        .btn-choice { padding: 20px 50px; font-size: 1.5rem; border-radius: 10px; cursor: pointer; border: none; font-family: 'Orbitron'; }
+        /* --- Choice Overlay --- */
+        .choice-overlay { position: fixed; inset: 0; background: rgba(5, 11, 24, 0.96); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
+        .btn-choice { padding: 20px; font-size: 1.4rem; border-radius: 12px; cursor: pointer; border: none; font-family: 'Orbitron'; margin: 10px; width: 280px; }
         .up { background: #10b981; color: white; }
         .down { background: #ef4444; color: white; }
-
-        .loader-text { margin-top: 20px; color: var(--accent); font-family: 'Orbitron'; font-size: 1.2rem; }
+        .btn-peek { background: #334155; color: white; margin-top: 30px; padding: 12px 30px; border-radius: 8px; cursor: pointer; border: none; }
+        .result-text { font-family: 'Orbitron'; font-size: 2rem; margin-bottom: 25px; }
+        .correct { color: #10b981; }
+        .wrong { color: #ef4444; }
     </style>
 </head>
 <body>
@@ -193,12 +156,12 @@
     }
 
     function buildDeck() {
-    deck = Array.from({length: 52}, (_, i) => i + 1);
-    for(let i = deck.length - 1; i > 0; i--){
-        const j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
+        deck = Array.from({length: 52}, (_, i) => i + 1);
+        for(let i = deck.length - 1; i > 0; i--){
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
     }
-}
 
     // --- Page Transitions ---
     function goToSetup() { showScreen('setup'); }
