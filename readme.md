@@ -2,9 +2,7 @@
 
 ## Team Information
 
-**Name:** TAYLO, CLARK KENNETH
-
-          ZAMORA, SEAN MATTHEW
+**Name:** TAYLO, CLARK KENNETH | ZAMORA, SEAN MATTHEW
 
 **Section:** 9339-AY225
 
