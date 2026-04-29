@@ -275,12 +275,12 @@
     }
 
     function endGame() {
-        const winner = pScore > cScore ? pName : cName;
+        const winner = pScore > cScore ? pName : (pScore === cScore ? "DRAW" : cName);
+        saveGameResult(winner, pScore, cScore);
         Swal.fire({
-            title: 'GAME OVER!',
-            text: ${winner} wins with ${Math.max(pScore, cScore)} points!,
-            icon: 'success',
-            confirmButtonText: 'Play Again'
+            title: 'BATTLE CONCLUDED',
+            html: `<h2 style="color:var(--accent)">${winner === "DRAW" ? "IT'S A DRAW!" : winner + " VICTORIOUS!"}</h2><p>${pName}: ${pScore} | ${cName}: ${cScore}</p>`,
+            confirmButtonText: 'REMATCH'
         }).then(() => location.reload());
     }
 
