@@ -1,25 +1,342 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Card Battler - UPHSD Project</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CARD BATTLER — PvP Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050b18;
+            --card-blue: #1e293b;
+            --accent: #f59e0b;
+            --player-glow: #3b82f6;
+            --cpu-glow: #ef4444;
+            --text: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #111827 0%, #050b18 100%);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- UI Components --- */
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            height: 100vh;
+            padding: 20px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.8s ease forwards;
+        }
+        .active { display: flex; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Landing Screen --- */
+        #landing h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            color: var(--accent);
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+            margin-bottom: 40px;
+        }
+
+        .btn-main {
+            padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+        }
+        .btn-main:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--accent); }
+
+        /* --- Setup Screen --- */
+        .setup-box { background: rgba(255,255,255,0.05); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 400px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 20px 0; border-radius: 8px; border: none; background: #0f172a; color: white; border-bottom: 2px solid var(--accent); }
+
+        /* --- Game HUD --- */
+        .hud { width: 100%; display: flex; justify-content: space-between; position: absolute; top: 20px; padding: 0 40px; }
+        .score-box { background: rgba(0,0,0,0.4); padding: 10px 20px; border-radius: 10px; border-left: 4px solid var(--accent); }
+        .player-score { border-left-color: var(--player-glow); }
+        .cpu-score { border-left-color: var(--cpu-glow); text-align: right;}
+
+        /* --- Card Styles --- */
+        .card-container { display: flex; gap: 20px; margin-top: 30px; }
+        .card {
+            width: 140px; height: 200px;
+            background: var(--card-blue);
+            border-radius: 12px;
+            cursor: pointer;
+            background-size: cover;
+            border: 2px solid rgba(255,255,255,0.1);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        .card.revealed { transform: rotateY(180deg); }
+        .card.selected { border-color: var(--accent); box-shadow: 0 0 20px var(--accent); }
+
+        /* --- Main Board --- */
+        .board-layout { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 20px; width: 100%; align-items: center; }
+        .side-area { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .history-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 15px; }
+        .history-slot { width: 80px; height: 110px; border: 1px dashed #334155; border-radius: 6px; background-size: cover; transition: all 0.5s; }
+
+        /* --- Overlay Choices --- */
+        .choice-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(5, 11, 24, 0.9);
+            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+        }
+        .choice-btns { display: flex; gap: 30px; margin-top: 20px; }
+        .btn-choice { padding: 20px 50px; font-size: 1.5rem; border-radius: 10px; cursor: pointer; border: none; font-family: 'Orbitron'; }
+        .up { background: #10b981; color: white; }
+        .down { background: #ef4444; color: white; }
+
+        .loader-text { margin-top: 20px; color: var(--accent); font-family: 'Orbitron'; font-size: 1.2rem; }
+    </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="enemy-area">
-            <h2 id="enemy-name">Enemy AI</h2>
-            <div id="enemy-hp">HP: 50</div>
+
+    <div id="hud" style="display: none;" class="hud">
+        <div class="score-box player-score">
+            <div id="pNameDisp">Player</div>
+            <div id="pScoreDisp" style="font-size: 24px; font-weight: bold;">0</div>
         </div>
-        
-        <div id="player-area">
-            <div id="player-hp">HP: 50</div>
-            <div id="hand"></div> </div>
-        
-        <div id="controls">
-            <button id="end-turn">End Turn</button>
+        <div class="score-box cpu-score">
+            <div id="cNameDisp">CPU</div>
+            <div id="cScoreDisp" style="font-size: 24px; font-weight: bold;">0</div>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <section id="landing" class="screen active">
+        <h1>Card Battler</h1>
+        <button class="btn-main" onclick="goToSetup()">START GAME</button>
+    </section>
+
+    <section id="setup" class="screen">
+        <div class="setup-box">
+            <h2 style="font-family: 'Orbitron'">WHO ARE YOU?</h2>
+            <input type="text" id="playerName" placeholder="Enter Nickname..." maxlength="12">
+            <button class="btn-main" onclick="startGame()">BATTLE</button>
+        </div>
+    </section>
+
+    <section id="selection" class="screen">
+        <h2 style="font-family: 'Orbitron'; color: var(--accent)">PICK YOUR DESTINY</h2>
+        <p>Choose one card to start your journey</p>
+        <div class="card-container" id="firstCardPool"></div>
+        <div id="selectionAnnounce" style="margin-top: 30px; font-size: 1.2rem; min-height: 30px;"></div>
+    </section>
+
+    <section id="mainBoard" class="screen">
+        <div class="board-layout" id="fullLayout">
+            <div class="side-area">
+                <div class="card" id="pBigCard"></div>
+                <p id="pLabel"></p>
+            </div>
+            
+            <div class="history-grid" id="historyGrid">
+                </div>
+
+            <div class="side-area">
+                <div class="card" id="cBigCard"></div>
+                <p id="cLabel"></p>
+            </div>
+        </div>
+    </section>
+
+    <div id="choiceOverlay" class="choice-overlay">
+        <h2 id="questionText">WHAT IS THE NEXT CARD?</h2>
+        <div class="choice-btns" id="choiceBtns">
+            <button class="btn-choice up" onclick="makeChoice('up')">HIGHER ↑</button>
+            <button class="btn-choice down" onclick="makeChoice('down')">LOWER ↓</button>
+        </div>
+        <div id="cpuLoading" style="display: none;">
+            <div class="loader-text">CPU IS THINKING...</div>
+        </div>
+    </div>
+
+<script>
+    // --- State Management ---
+    let deck = [], pName = "", cName = "", pScore = 0, cScore = 0;
+    let pCardVal = 0, cCardVal = 0, currentVal = 0;
+    let round = 1;
+    const cpuNames = ["Xenon", "Cipher", "Aegis", "Vortex", "Neon"];
+
+    // --- Core Functions ---
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function buildDeck() {
+        deck = [];
+        for(let i=1; i<=52; i++) deck.push(i);
+        for(let i=deck.length-1; i>0; i--){
+            const j = Math.floor(Math.random()*(i+1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+    }
+
+    // --- Page Transitions ---
+    function goToSetup() { showScreen('setup'); }
+
+    function startGame() {
+        pName = document.getElementById('playerName').value || "Player 1";
+        cName = cpuNames[Math.floor(Math.random()*cpuNames.length)];
+        
+        document.getElementById('pNameDisp').innerText = pName;
+        document.getElementById('cNameDisp').innerText = cName;
+        document.getElementById('hud').style.display = 'flex';
+        
+        initSelection();
+        showScreen('selection');
+    }
+
+    // --- Phase: Selection ---
+    function initSelection() {
+        buildDeck();
+        const pool = document.getElementById('firstCardPool');
+        pool.innerHTML = '';
+        const cards = [deck.shift(), deck.shift(), deck.shift(), deck.shift()];
+        
+        cards.forEach(val => {
+            const c = document.createElement('div');
+            c.className = 'card';
+            c.style.backgroundImage = url('images/cards/back.jpg');
+            c.onclick = () => selectFirstCard(c, val, cards);
+            pool.appendChild(c);
+        });
+    }
+
+    function selectFirstCard(el, val, allCards) {
+        if(el.parentElement.classList.contains('locked')) return;
+        el.parentElement.classList.add('locked');
+        
+        // Player Choice
+        el.classList.add('revealed');
+        el.style.backgroundImage = url('images/cards/${val}.jpg');
+        pCardVal = val;
+        
+        // CPU Choice (Random from remaining)
+        const remaining = allCards.filter(v => v !== val);
+        const cpuVal = remaining[Math.floor(Math.random()*remaining.length)];
+        cCardVal = cpuVal;
+
+        document.getElementById('selectionAnnounce').innerText = First Card for ${pName} is Reveal!;
+
+        setTimeout(() => {
+            initMainBoard();
+            showScreen('mainBoard');
+            startRoundLoop();
+        }, 2000);
+    }
+
+    // --- Phase: Main Board ---
+    function initMainBoard() {
+        const grid = document.getElementById('historyGrid');
+        grid.innerHTML = '';
+        for(let i=0; i<10; i++) {
+            const slot = document.createElement('div');
+            slot.className = 'history-slot';
+            slot.id = slot-${i};
+            grid.appendChild(slot);
+        }
+        
+        document.getElementById('pBigCard').style.backgroundImage = url('images/cards/${pCardVal}.jpg');
+        document.getElementById('cBigCard').style.backgroundImage = url('images/cards/${cCardVal}.jpg');
+        document.getElementById('pLabel').innerText = pName;
+        document.getElementById('cLabel').innerText = cName;
+        
+        currentVal = pCardVal; // Game starts based on player's card
+    }
+
+    async function startRoundLoop() {
+        if(round > 10) return endGame();
+
+        await new Promise(r => setTimeout(r, 2000));
+        
+        // Show Overlay
+        document.getElementById('choiceOverlay').style.display = 'flex';
+        document.getElementById('choiceBtns').style.display = 'flex';
+        document.getElementById('cpuLoading').style.display = 'none';
+    }
+
+    let pChoice = "";
+    function makeChoice(dir) {
+        pChoice = dir;
+        document.getElementById('choiceBtns').style.display = 'none';
+        document.getElementById('cpuLoading').style.display = 'block';
+        
+        setTimeout(() => {
+            revealNextCard();
+        }, 2000);
+    }
+
+    function revealNextCard() {
+        document.getElementById('choiceOverlay').style.display = 'none';
+        const nextVal = deck.shift();
+        const slot = document.getElementById(slot-${round-1});
+        slot.style.backgroundImage = url('images/cards/${nextVal}.jpg');
+        
+        // CPU logic: 50/50 chance
+        const cChoice = Math.random() > 0.5 ? 'up' : 'down';
+        
+        // Scoring
+        const isUp = nextVal > currentVal;
+        const pWin = (pChoice === 'up' && isUp) || (pChoice === 'down' && !isUp);
+        const cWin = (cChoice === 'up' && isUp) || (cChoice === 'down' && !isUp);
+
+        if(pWin) pScore += 100; else pScore -= 50;
+        if(cWin) cScore += 100; else cScore -= 50;
+
+        updateHUD();
+        
+        // Move focus to 10 slots only
+        if(round === 1) {
+            document.getElementById('pBigCard').parentElement.style.opacity = '0';
+            document.getElementById('cBigCard').parentElement.style.opacity = '0';
+        }
+
+        currentVal = nextVal;
+        round++;
+        startRoundLoop();
+    }
+
+    function updateHUD() {
+        document.getElementById('pScoreDisp').innerText = pScore;
+        document.getElementById('cScoreDisp').innerText = cScore;
+    }
+
+    function endGame() {
+        const winner = pScore > cScore ? pName : cName;
+        Swal.fire({
+            title: 'GAME OVER!',
+            text: ${winner} wins with ${Math.max(pScore, cScore)} points!,
+            icon: 'success',
+            confirmButtonText: 'Play Again'
+        }).then(() => location.reload());
+    }
+
+</script>
 </body>
 </html>
