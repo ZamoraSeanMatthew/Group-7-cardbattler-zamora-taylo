@@ -163,7 +163,17 @@
     }
 
     function startGame() {
-        pName = document.getElementById('playerName').value || "PLAYER";
+        pName = document.getElementById('playerName').value.trim();
+        if (!pName) {
+            Swal.fire({
+                title: 'NAME REQUIRED',
+                text: 'Please enter a player name to begin battle.',
+                background: '#050b18',
+                color: '#fff',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
         cName = ["Viper", "Glitch", "Shadow", "Neon", "Cipher", "Phoenix", "Blaze", "Revenant", "Specter", "Nexus", "Rogue", "Eclipse", "Inferno", "Vortex", "Titan", "Zodiac"][Math.floor(Math.random()*16)];
         document.getElementById('pNameDisp').innerText = pName;
         document.getElementById('cNameDisp').innerText = cName;
