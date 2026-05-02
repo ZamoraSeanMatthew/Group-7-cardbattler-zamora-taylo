@@ -287,19 +287,19 @@
 
     function saveGameResult(winner, pFinal, cFinal) {
         let history = JSON.parse(localStorage.getItem('battlerHistory') || '[]');
-        history.unshift({ date: new Date().toLocaleString(), winner, pFinal, cFinal });
+        history.unshift({ date: new Date().toLocaleString(), winner, pName: pName, pFinal: pFinal, cName: cName, cFinal: cFinal });
         localStorage.setItem('battlerHistory', JSON.stringify(history.slice(0, 10)));
     }
 
     function showHistory() {
         let history = JSON.parse(localStorage.getItem('battlerHistory') || '[]');
-        let rows = history.length ? history.map(h => `<tr><td>${h.date}</td><td>${h.winner}</td><td>${h.pFinal}</td><td>${h.cFinal}</td></tr>`).join('') : '<tr><td colspan="4">No battles recorded yet.</td></tr>';
+        let rows = history.length ? history.map(h => `<tr><td>${h.date}</td><td>${h.winner}</td><td>${h.pName}: ${h.pFinal}</td><td>${h.cName}: ${h.cFinal}</td></tr>`).join('') : '<tr><td colspan="4">No battles recorded yet.</td></tr>';
         Swal.fire({
             title: 'BATTLE RECORDS',
             width: 800,
             background: '#050b18',
             color: '#fff',
-            html: `<div class="history-container"><table><thead><tr><th>DATE</th><th>WINNER</th><th>PLAYER</th><th>CPU</th></tr></thead><tbody>${rows}</tbody></table></div>`,
+            html: `<div class="history-container"><table><thead><tr><th>DATE</th><th>WINNER</th><th>PLAYER SCORE</th><th>CPU SCORE</th></tr></thead><tbody>${rows}</tbody></table></div>`,
             confirmButtonText: 'CLOSE'
         });
     }
