@@ -88,8 +88,8 @@
         .resume-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--accent); }
         .quit-btn { background: #ef4444; color: white; }
         .quit-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px #ef4444; }
-        .pause-btn { position: fixed; bottom: 20px; left: 20px; background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 12px 25px; border-radius: 10px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; transition: 0.3s; z-index: 11; display: none; font-size: 0.95rem; }
-        .pause-btn:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--accent); }
+        .pause-btn { position: static; background: #ef4444; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; transition: 0.3s; font-size: 0.95rem; margin-left: 10px; }
+        .pause-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #ef4444; }
     </style>
 </head>
 <body>
@@ -105,7 +105,6 @@
         </div>
     </div>
 
-    <button class="pause-btn" onclick="togglePause()" id="pauseBtn">⏸ PAUSE</button>
 
     <section id="landing" class="screen active">
         <h1>CARD BATTLER</h1>
@@ -151,6 +150,7 @@
             <button class="btn-choice down" onclick="makeChoice('down')">LOWER ↓</button>
             <br>
             <button class="btn-peek" onclick="peekBoard()">PEEK BOARD (5s)</button>
+            <button class="btn-peek" onclick="togglePause()" id="pauseBtn" style="background: #ef4444; margin-left: 10px;">PAUSE</button>
         </div>
         <div id="loadingBox" style="display: none; text-align: center;">
             <p id="resultMsg" class="result-text"></p>
@@ -252,7 +252,6 @@
 
     function startRound() {
         if(round > 10) return endGame();
-        document.getElementById('pauseBtn').style.display = 'block';
         document.getElementById('choiceOverlay').style.display = 'flex';
         document.getElementById('choiceActions').style.display = 'block';
         document.getElementById('loadingBox').style.display = 'none';
@@ -274,7 +273,6 @@
 
     function quitGame() {
         isPaused = false;
-        document.getElementById('pauseBtn').style.display = 'none';
         document.getElementById('pauseOverlay').classList.remove('active');
         location.reload();
     }
