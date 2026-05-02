@@ -88,14 +88,14 @@
         .resume-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--accent); }
         .quit-btn { background: #ef4444; color: white; }
         .quit-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px #ef4444; }
-        .pause-btn { position: absolute; top: 20px; left: 40px; background: var(--accent); color: #000; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; transition: 0.3s; z-index: 11; display: none; font-size: 0.95rem; box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
+        .pause-btn { position: fixed; bottom: 20px; left: 20px; background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 12px 25px; border-radius: 10px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; transition: 0.3s; z-index: 11; display: none; font-size: 0.95rem; }
         .pause-btn:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--accent); }
     </style>
 </head>
 <body>
 
     <div id="hud" style="display: none;" class="hud">
-        <div class="score-box" style="border-color: var(--player-glow)">
+        <div     class="score-box" style="border-color: var(--player-glow)">
             <div id="pNameDisp" style="font-family: 'Orbitron'; font-size: 14px; color: #94a3b8;">Player</div>
             <div id="pScoreDisp" style="font-size: 28px; font-weight: bold;">0</div>
         </div>
@@ -103,8 +103,9 @@
             <div id="cNameDisp" style="font-family: 'Orbitron'; font-size: 14px; color: #94a3b8;">CPU</div>
             <div id="cScoreDisp" style="font-size: 28px; font-weight: bold;">0</div>
         </div>
-        <button class="pause-btn" onclick="togglePause()" id="pauseBtn">⏸ PAUSE</button>
     </div>
+
+    <button class="pause-btn" onclick="togglePause()" id="pauseBtn">⏸ PAUSE</button>
 
     <section id="landing" class="screen active">
         <h1>CARD BATTLER</h1>
