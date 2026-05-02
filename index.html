@@ -110,6 +110,7 @@
         <h1>CARD BATTLER</h1>
         <div style="display: flex; gap: 10px;">
             <button class="btn-main" onclick="showScreen('setup')">ENTER ARENA</button>
+            <button class="btn-main btn-secondary" onclick="showRules()">RULES</button>
             <button class="btn-main btn-secondary" onclick="showHistory()">SCORE HISTORY</button>
         </div>
     </section>
@@ -345,6 +346,35 @@
         let history = JSON.parse(localStorage.getItem('battlerHistory') || '[]');
         history.unshift({ date: new Date().toLocaleString(), winner, pName: pName, pFinal: pFinal, cName: cName, cFinal: cFinal });
         localStorage.setItem('battlerHistory', JSON.stringify(history.slice(0, 10)));
+    }
+
+    function showRules() {
+        Swal.fire({
+            title: 'GAME RULES',
+            width: 800,
+            background: '#050b18',
+            color: '#fff',
+            html: `<div style="text-align: left; font-family: 'Inter'; font-size: 1rem; line-height: 1.8; color: #f8fafc;">
+                <h3 style="color: var(--accent); margin-bottom: 15px; font-size: 1.3rem;">HOW TO PLAY</h3>
+                <p><strong>1. SETUP:</strong> Enter your name and select your starting card from the pool.</p>
+                <p><strong>2. THE GAME:</strong> You'll face off against a CPU opponent (Viper, Glitch, Shadow, Neon, etc.).</p>
+                <p><strong>3. PREDICT:</strong> For each round, predict if the NEXT card will be HIGHER or LOWER than your current card.</p>
+                <p><strong>4. SCORING:</strong></p>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li>✓ Correct prediction: <span style="color: #10b981;">+100 points</span></li>
+                    <li>✗ Wrong prediction: <span style="color: #ef4444;">-50 points</span></li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>5. ROUNDS:</strong> Play 10 rounds total. The player with the highest score wins!</p>
+                <p style="margin-top: 15px;"><strong>6. CONTROLS:</strong></p>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li><strong>HIGHER ↑</strong> - Next card will be higher</li>
+                    <li><strong>LOWER ↓</strong> - Next card will be lower</li>
+                    <li><strong>PEEK BOARD</strong> - See the game board for 5 seconds</li>
+                    <li><strong>PAUSE</strong> - Pause the game and return to menu</li>
+                </ul>
+            </div>`,
+            confirmButtonText: 'CLOSE'
+        });
     }
 
     function showHistory() {
