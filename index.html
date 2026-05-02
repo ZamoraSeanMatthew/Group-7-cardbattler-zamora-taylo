@@ -105,12 +105,14 @@
             <h2 style="font-family: 'Orbitron'; margin-bottom:30px;">IDENTIFY YOURSELF</h2>
             <input type="text" id="playerName" placeholder="Input Name..." style="width: 100%; padding: 15px; margin-bottom: 30px; border-radius: 10px; border: none; background: #0f172a; color: white; font-size: 1.1rem; border-bottom: 2px solid var(--accent);">
             <button class="btn-main" onclick="startGame()">START BATTLE</button>
+            <button class="btn-main btn-secondary" onclick="showScreen('landing')">← BACK</button>
         </div>
     </section>
 
     <section id="selection" class="screen">
         <h2 style="font-family: 'Orbitron'; color: var(--accent); margin-bottom: 40px;">SELECT YOUR PRIMORDIAL CARD</h2>
         <div class="card-container" id="firstCardPool"></div>
+        <button class="btn-main btn-secondary" style="margin-top: 40px;" onclick="showScreen('setup')">← BACK</button>
     </section>
 
     <section id="mainBoard" class="screen">
